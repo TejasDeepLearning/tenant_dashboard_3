@@ -1,0 +1,35 @@
+Project notes
+
+There are multiple tenants. Tenants occupy multiple places. Each of the places has an associated rental agreement. The rental agreement has a specific start date and end date. all rental agreements have a termination clause. The problem is the termination clause is different for all agreements.
+
+need a dashboard where when people open it, it gives a list of tenants, list of places they occupy and all the main details from the agreement, which is period of rent, rent itself, maintenance (common area maintenance), rent escalation, and when the agreement will close. 
+
+Terms I need to know: lock in period - which is the period in which the tenant cannot break the agreement and go out. Rental agreement period - which will be equal to the lock in period or greater. 
+
+In the dashboard, we’ll need some kind of alert when people open the dashboard which says which tenant has a lock-in period coming up and which tenant's lock-in period has just passed in the last one month, when is the rent escalation period coming up, and when will the agreement expire. 
+
+These alerts are in the next three months which are going to come up and in the last 1 month, what has passed. allow the user to mute that alert. 
+
+need to allow the user to upload these rental documents. text on the pdf is readable, but unhighlightable. 
+
+Initial Whatsapp Chat Message
+
+There is a need to create a dashboard that ingests rental agreements and displays the data in a dashboard. This requires reading data of PDF documents, deciphering data such as tenant name, rents, date range of agreement validity, and other information from these PDFs, and displaying in a user-friendly manner. There may be alerts that will need to go to certain users based on date, rentals, etc. Could you own this up fully and start development/implementation as soon as possible?
+
+Need to know
+
+how is the maintenance calculated, is it a fixed formula or should it be extracted from the agreement? is there a need to compare against a set formula. 
+
+how should we show the “rental period greater or lesser than lock in period” column?
+
+When should we show the lock in period alert?
+
+
+Project outline
+
+I want to build a python project on this. I want to create a dashboard web app which will show a table. We need to show alerts based on whether the lock-in period is coming up, paid, or passed. The alert should just be the lock in period value for that column highlighted in a particular color. The "coming up" alert should show up one month before the lock in period and should be gray in color. For the "paid" alert, we should check whether the tenant has paid or not before the lock in period and highlight it in green. for the "passed" alert, highlight it in red.
+
+The process will go something like this: A user uploads a pdf of a rental agreement to the app (This is a scanned pdf, so the text cannot be detected. we'll have to use convert it, then use ocr, pass it directly to an ai llm or something), the program will have and AI large language model read through the pdf, then fill in the values like the tenant name, place occupied, all the way to next rent escalation. Then the program will highlight the appropriate color for the alert in the "lock in period end date" column.
+
+
+"tenant name", place occupied", "period of rent", "rent amount", "maintenance", "rent escalation", "agreement start date", "agreement expiry date", "lock in period", "lock in period end date", "rental period greater than lock in period", "next rent escalation"

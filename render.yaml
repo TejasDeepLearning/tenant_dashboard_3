@@ -1,0 +1,34 @@
+services:
+  - type: web
+    name: tenant-dashboard
+    runtime: python3
+    buildCommand: |
+      pip install -r requirements.txt
+      python -c "import poppler_utils" || echo "Note: Poppler may need manual installation"
+    startCommand: gunicorn wsgi:application
+    plan: free
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: SECRET_KEY
+        generateValue: true
+      - key: OPENAI_API_KEY
+        sync: false  # Set manually in Render dashboard
+      - key: SMTP_SERVER
+        value: smtp.gmail.com
+      - key: SMTP_PORT
+        value: 587
+      - key: SENDER_PASSWORD
+        sync: false  # Set manually in Render dashboard
+      - key: DEFAULT_ADMIN_PASSWORD
+        sync: false  # Set manually in Render dashboard
+      - key: MAX_CONTENT_LENGTH
+        value: 16777216
+      - key: UPLOAD_FOLDER
+        value: uploads
+      - key: SESSION_COOKIE_SECURE
+        value: true
+      - key: SESSION_COOKIE_HTTPONLY
+        value: true
+      - key: SESSION_COOKIE_SAMESITE
+        value: Lax

@@ -1,0 +1,197 @@
+<!doctype html>
+<html>
+<head>
+    <title>Tenant Dashboard</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        /* Alert status colors for agreement expiry date */
+        .alert-three_months {
+            background-color: #fff3cd !important; /* Amber yellow */
+            color: #856404;
+        }
+        .alert-two_months {
+            background-color: #f8d7da !important; /* Light red */
+            color: #721c24;
+        }
+        .alert-one_month {
+            background-color: #dc3545 !important; /* Dark red */
+            color: #ffffff;
+        }
+        .alert-expired {
+            background-color: #dc3545 !important; /* Dark red for whole row */
+            color: #ffffff;
+        }
+        /* Header styling */
+        .table thead th {
+            background-color: #f8f9fa !important; /* Light gray */
+            text-align: center;
+            vertical-align: middle;
+        }
+        /* Rental period false value highlighting */
+        .rental-period-false {
+            background-color: #f8d7da !important; /* Light red */
+            color: #721c24;
+        }
+        /* Expired row styling - entire row highlighted */
+        .row-expired {
+            background-color: #dc3545 !important; /* Dark red */
+            color: #ffffff !important;
+        }
+        .row-expired td {
+            background-color: #dc3545 !important; /* Dark red */
+            color: #ffffff !important;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="bi bi-building me-2"></i>Tenant Dashboard</h2>
+        <div class="d-flex align-items-center">
+            <span class="me-3">
+                <i class="bi bi-person-circle me-1"></i>
+                Welcome, {{ current_user.username }}
+            </span>
+            <a href="{{ url_for('logout') }}" class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-box-arrow-right me-1"></i>Logout
+            </a>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-8">
+            <form method="post" enctype="multipart/form-data">
+                <div class="d-flex align-items-center">
+                    <input type="file" name="file" accept=".pdf" required class="form-control me-2">
+                    <button type="submit" class="btn btn-primary">Upload Agreement</button>
+                </div>
+            </form>
+        </div>
+        <div class="col-md-4 text-end">
+            <div class="d-flex justify-content-end align-items-center flex-wrap">
+                <form method="post" action="/send_email_alerts" style="display: inline;" class="me-2">
+                    <button type="submit" class="btn btn-outline-warning" 
+                            onclick="return confirm('Send email alerts to all tenants with expiry warnings?');"
+                            title="Send email notifications to tenants with agreement alerts">
+                        <i class="bi bi-envelope-exclamation"></i> Send Alerts
+                    </button>
+                </form>
+                <a href="/download_csv" class="btn btn-outline-success me-2">
+                    <i class="bi bi-download"></i> Download CSV
+                </a>
+                <a href="/gmail_settings" class="btn btn-outline-primary me-2">
+                    <i class="bi bi-envelope"></i> Enter Gmail Address
+                </a>
+                <a href="/archive" class="btn btn-secondary">
+                    <i class="bi bi-trash"></i> View Recycle Bin
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="alert-container mb-3">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+                        {% if category == 'success' %}
+                            <i class="bi bi-check-circle-fill"></i>
+                        {% elif category == 'error' %}
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                        {% elif category == 'warning' %}
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                        {% else %}
+                            <i class="bi bi-info-circle-fill"></i>
+                        {% endif %}
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    
+    
+    <!-- Email Configuration Test -->
+    <div class="card mb-3">
+        <div class="card-header">
+            <h6 class="card-title mb-0">
+                <i class="bi bi-gear"></i> Email Configuration Test
+            </h6>
+        </div>
+        <div class="card-body">
+            <form method="post" action="/test_email" class="d-flex align-items-center">
+                <div class="me-2">
+                    <input type="email" name="test_email" placeholder="Enter email to test configuration" 
+                           class="form-control form-control-sm" style="width: 250px;" required>
+                </div>
+                <button type="submit" class="btn btn-sm btn-outline-info">
+                    <i class="bi bi-envelope-check"></i> Test Email
+                </button>
+            </form>
+            <small class="text-muted">Use this to test your email configuration before sending alerts.</small>
+        </div>
+    </div>
+    
+    <hr>
+    {% if agreements %}
+    <div class="mb-3">
+        <small class="text-muted">Total Agreements: {{ agreements|length }}</small>
+    </div>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Tenant Name</th>
+                <th>Area (sqft)</th>
+                <th>Floor</th>
+                <th>Building</th>
+                <th>Period of Rent (Months)</th>
+                <th>Rent Amount (₹/sqft/month)</th>
+                <th>Maintenance (₹/sqft/month)</th>
+                <th>Rent Escalation (% per year)</th>
+                <th>Agreement Start Date</th>
+                <th>Agreement Expiry Date</th>
+                <th>Lock In Period (Months)</th>
+                <th>Lock In Period End Date</th>
+                <th>Rental Period &gt; Lock In Period</th>
+                <th>Next Rent Escalation</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for a in agreements %}
+            <tr class="{% if a.alert_status == 'expired' %}row-expired{% endif %}">
+                <td>{{ a.tenant_name }}</td>
+                <td>{% if a.area_sqft %}{{ a.area_sqft }} sqft{% endif %}</td>
+                <td>{{ a.floor }}</td>
+                <td>{{ a.building }}</td>
+                <td>{% if a.period_of_rent %}{{ a.period_of_rent }} month{% if a.period_of_rent != '1' %}s{% endif %}{% endif %}</td>
+                <td>{% if a.rent_amount %}Rs {{ a.rent_amount }}{% endif %}</td>
+                <td>{% if a.maintenance %}Rs {{ a.maintenance }}{% endif %}</td>
+                <td>{{ a.rent_escalation }}</td>
+                <td>{{ a.agreement_start_date }}</td>
+                <td class="{% if a.alert_status %}alert-{{ a.alert_status }}{% endif %}" title="Alert Status: {{ a.alert_status }}">{{ a.agreement_expiry_date }}</td>
+                <td>{% if a.lock_in_period %}{{ a.lock_in_period }} month{% if a.lock_in_period != '1' %}s{% endif %}{% endif %}</td>
+                <td>{{ a.lock_in_period_end_date }}</td>
+                <td class="{% if a.rental_period_greater_than_lock_in_period == 'False' %}rental-period-false{% endif %}">{{ a.rental_period_greater_than_lock_in_period }}</td>
+                <td>{{ a.next_rent_escalation }}</td>
+                <td>
+                    <form method="post" action="/delete_agreement/{{ a.id }}" style="display: inline;" 
+                          onsubmit="return confirm('Are you sure you want to delete this agreement for {{ a.tenant_name }}?');">
+                        <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete Agreement">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+</div>
+
+<!-- Bootstrap JavaScript for dismissible alerts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

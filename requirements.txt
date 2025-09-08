@@ -1,0 +1,11 @@
+Flask
+Werkzeug
+pytesseract
+Pillow
+pdf2image
+openai
+python-dotenv
+Flask-Limiter
+Flask-Login
+bcrypt
+gunicorn
