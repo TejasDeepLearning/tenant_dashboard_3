@@ -2,7 +2,7 @@
 
 A secure, production-ready web application for managing rental agreements with OCR-powered document processing, automated email alerts, and comprehensive tenant management features.
 
-## 🌟 Features
+##  Features
 
 - **Secure Authentication**: User login system with bcrypt password hashing
 - **OCR Document Processing**: Extract data from PDF rental agreements using Tesseract OCR
@@ -14,7 +14,7 @@ A secure, production-ready web application for managing rental agreements with O
 - **Archive System**: Soft delete and restore capabilities
 - **Production Security**: HTTPS support, secure headers, session management
 
-## 🚀 Quick Start (Local Development)
+##  Quick Start (Local Development)
 
 ### Prerequisites
 
@@ -49,7 +49,7 @@ A secure, production-ready web application for managing rental agreements with O
    - Open http://localhost:5000 in your browser
    - Login with username `admin` and your configured password
 
-## 🌐 Production Deployment
+##  Production Deployment
 
 This application is ready for production deployment on various platforms:
 
@@ -91,7 +91,7 @@ SENDER_NAME=Tenant Dashboard            # Only needed if not configured in Gmail
 MAX_CONTENT_LENGTH=16777216             # Max file size in bytes (16MB)
 ```
 
-## 📁 Project Structure
+##  Project Structure
 
 ```
 tenant_dashboard_3/
@@ -137,7 +137,7 @@ tenant_dashboard_3/
 - Secure filename handling
 - CSRF protection
 
-## 📊 Usage
+##  Usage
 
 ### Adding Rental Agreements
 1. Upload PDF rental agreement documents
@@ -173,7 +173,7 @@ tenant_dashboard_3/
 - Environment variable management
 - Regular backup strategy
 
-## 🔧 Troubleshooting
+##  Troubleshooting
 
 ### Common Issues
 
@@ -198,15 +198,3 @@ tenant_dashboard_3/
 2. Verify all environment variables are correctly set
 3. Test with simple PDF files first
 4. Refer to [DEPLOYMENT.md](DEPLOYMENT.md) for platform-specific guidance
-
-## 📄 License
-
-This project is open source and available under the MIT License.
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit issues and enhancement requests.
-
----
-
-**Built with ❤️ using Flask, OpenAI GPT-4o, and modern web technologies.**
